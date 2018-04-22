@@ -1,11 +1,13 @@
 package com.kenjih.server
 
 import io.netty.buffer.Unpooled
+import io.netty.channel.ChannelHandler.Sharable
 import io.netty.channel.{ChannelFutureListener, ChannelHandlerContext, ChannelInboundHandlerAdapter}
 import io.netty.handler.codec.http._
 import io.netty.util.AsciiString
 import org.apache.logging.log4j.scala.Logging
 
+@Sharable
 class HttpServerHandler extends ChannelInboundHandlerAdapter with Logging {
 
   override def channelRead(ctx: ChannelHandlerContext, msg: scala.Any): Unit = {
