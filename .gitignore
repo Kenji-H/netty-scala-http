@@ -1,0 +1,8 @@
+*.class
+*.log
+
+# sbt specific
+target/
+
+# IDE specific
+.idea
