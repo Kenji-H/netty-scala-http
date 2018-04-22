@@ -1,5 +1,6 @@
 package com.kenjih.server
 
+import com.kenjih.metrics.Counter
 import io.netty.buffer.Unpooled
 import io.netty.channel.ChannelHandler.Sharable
 import io.netty.channel.{ChannelFutureListener, ChannelHandlerContext, ChannelInboundHandlerAdapter}
@@ -8,10 +9,12 @@ import io.netty.util.AsciiString
 import org.apache.logging.log4j.scala.Logging
 
 @Sharable
-class HttpServerHandler extends ChannelInboundHandlerAdapter with Logging {
+class HttpServerHandler(requestCounter: Counter) extends ChannelInboundHandlerAdapter with Logging {
 
   override def channelRead(ctx: ChannelHandlerContext, msg: scala.Any): Unit = {
     if (msg.isInstanceOf[HttpRequest]) {
+      requestCounter.increment()
+
       val request = msg.asInstanceOf[HttpRequest]
       val keepAlive = HttpUtil.isKeepAlive(request)
 
@@ -40,7 +43,7 @@ class HttpServerHandler extends ChannelInboundHandlerAdapter with Logging {
     logger.catching(cause)
     ctx.close()
   }
-  
+
 }
 
 object HttpServerHandler {

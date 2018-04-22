@@ -1,5 +1,8 @@
 package com.kenjih.server
 
+import java.util.concurrent.{Executors, TimeUnit}
+
+import com.kenjih.metrics.Counter
 import com.kenjih.server.HttpServer.Port
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.{ChannelInitializer, ChannelOption}
@@ -15,8 +18,15 @@ class HttpServer() extends Logging {
   def run(boss: NioEventLoopGroup, worker: NioEventLoopGroup) =
     Try {
       val b = new ServerBootstrap()
+      val requestCounter = new Counter("request")
+      val httpServerHandler = new HttpServerHandler(requestCounter)
 
-      val httpServerHandler = new HttpServerHandler()
+      val executor = Executors.newSingleThreadScheduledExecutor()
+      executor.scheduleAtFixedRate(new Runnable {
+        override def run(): Unit = {
+          logger.info(requestCounter.outputAndRest())
+        }
+      }, 1, 1, TimeUnit.SECONDS)
 
       b.option[Integer](ChannelOption.SO_BACKLOG, 1024)
       b.group(boss, worker)
