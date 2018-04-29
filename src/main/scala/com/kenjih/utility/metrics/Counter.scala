@@ -1,4 +1,4 @@
-package com.kenjih.helloworld.metrics
+package com.kenjih.utility.metrics
 
 import java.util.concurrent.atomic.LongAdder
 

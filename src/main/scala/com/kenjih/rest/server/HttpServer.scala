@@ -1,25 +1,27 @@
-package com.kenjih.helloworld.server
+package com.kenjih.rest.server
 
 import java.util.concurrent.{Executors, TimeUnit}
 
-import com.kenjih.utility.metrics.Counter
-import com.kenjih.helloworld.server.HttpServer.Port
+import com.kenjih.rest.entity.Time
+
+import scala.util.Try
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.{ChannelInitializer, ChannelOption}
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.channel.socket.SocketChannel
 import io.netty.channel.socket.nio.NioServerSocketChannel
-import io.netty.handler.codec.http.{HttpServerCodec, HttpServerExpectContinueHandler}
+import io.netty.handler.codec.http.{HttpObjectAggregator, HttpServerCodec}
 import org.apache.logging.log4j.scala.Logging
-
-import scala.util.Try
+import com.kenjih.utility.metrics.Counter
 
 class HttpServer() extends Logging {
   def run(boss: NioEventLoopGroup, worker: NioEventLoopGroup) =
     Try {
       val b = new ServerBootstrap()
       val requestCounter = new Counter("request")
-      val httpServerHandler = new HttpServerHandler(requestCounter)
+      val httpInboundHandler = new HttpInboundHandler(requestCounter)
+      val httpOutboundHandler = new HttpOutboundHandler
+      val workerHandler = new WorkerHandler
 
       val executor = Executors.newSingleThreadScheduledExecutor()
       executor.scheduleAtFixedRate(new Runnable {
@@ -35,11 +37,14 @@ class HttpServer() extends Logging {
           override def initChannel(ch: SocketChannel) = {
             val p = ch.pipeline
             p.addLast(new HttpServerCodec)
-            p.addLast(new HttpServerExpectContinueHandler)
-            p.addLast(httpServerHandler)
+            p.addLast(new HttpObjectAggregator(65536))
+            p.addLast(httpInboundHandler)
+            p.addLast(httpOutboundHandler)
+            p.addLast(new JsonCodecHandler[Time])
+            p.addLast(workerHandler)
           }
         })
-      val ch = b.bind(Port).sync().channel()
+      val ch = b.bind(HttpServer.Port).sync().channel()
 
       logger.info("Http Server started.")
 

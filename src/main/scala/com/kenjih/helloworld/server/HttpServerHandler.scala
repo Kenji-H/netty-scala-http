@@ -1,6 +1,6 @@
 package com.kenjih.helloworld.server
 
-import com.kenjih.helloworld.metrics.Counter
+import com.kenjih.utility.metrics.Counter
 import io.netty.buffer.Unpooled
 import io.netty.channel.ChannelHandler.Sharable
 import io.netty.channel.{ChannelFutureListener, ChannelHandlerContext, ChannelInboundHandlerAdapter}
