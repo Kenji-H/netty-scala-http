@@ -1,4 +1,4 @@
-package com.kenjih.client
+package com.kenjih.helloworld.client
 
 import java.util.concurrent.LinkedBlockingQueue
 

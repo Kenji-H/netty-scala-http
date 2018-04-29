@@ -1,9 +1,9 @@
-package com.kenjih.server
+package com.kenjih.helloworld.server
 
 import java.util.concurrent.{Executors, TimeUnit}
 
-import com.kenjih.metrics.Counter
-import com.kenjih.server.HttpServer.Port
+import com.kenjih.helloworld.metrics.Counter
+import com.kenjih.helloworld.server.HttpServer.Port
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.{ChannelInitializer, ChannelOption}
 import io.netty.channel.nio.NioEventLoopGroup

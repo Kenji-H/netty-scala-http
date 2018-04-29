@@ -1,4 +1,4 @@
-package com.kenjih.client
+package com.kenjih.helloworld.client
 
 import io.netty.channel.{ChannelHandlerContext, SimpleChannelInboundHandler}
 import io.netty.handler.codec.http.HttpResponse
